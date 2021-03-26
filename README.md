@@ -134,11 +134,11 @@ There is an [automatically generated dApp interface for the contract on Ethersca
 
 | From | To | Restrict | Enforced By | Admin Role |
 |:-|:-|:-|:-|:-|
-| Reg D/S/CF | Anyone | Until TimeLock ends | `setLockUntil(investorAddress)` | Transfer Admin |
+| Reg D/S/CF | Anyone | Until TimeLock ends | `addLockUntil(investorAddress, balanceReserved)` | Wallets Admin |
 | Reg S Group | US Accredited | Forbidden During Flowback Restriction Period | `setAllowGroupTransfer(fromGroupS, toGroupD, afterTime)` | Transfer Admin |
 | Reg S Group | Reg S Group | Forbidden Until Shorter Reg S TimeLock Ended | `setAllowGroupTransfer(fromGroupS, toGroupS, afterTime)` | Transfer Admin |
-| Issuer | Reg CF with > maximum value of tokens allowed | Forbid transfers increasing token balances above max balance | `setMaxBalance(amount)` | Transfer Admin |
-| Stolen Tokens | Anyone | Fix With Freeze, Burn, Reissue| `freeze(stolenTokenAddress);`<br /> `burn(address, amount);`<br />`mint(newOwnerAddress);` | Transfer Admin can `freeze()` and Contract Admin can do `mint()` `burn()` and `freeze()` |
+| Issuer | Reg CF with > maximum value of tokens allowed | Forbid transfers increasing token balances above max balance | `setMaxBalance(amount)` | Wallets Admin |
+| Stolen Tokens | Anyone | Fix With Freeze, Burn, Reissue| `freeze(stolenTokenAddress);`<br /> `burn(address, amount);`<br />`mint(newOwnerAddress);` | Wallets Admin can `freeze()` and Reserve Admin can do `mint()` `burn()` and `freeze()` |
 | Any Address During Regulatory Freeze| Anyone | Forbid all transfers while paused | `pause()` | Contract Admin |
 
 # Roles
@@ -189,8 +189,8 @@ Individual token holders have accounts that are provisioned by the transfer admi
 
 ![](diagrams/plant-uml-diagrams/setup.png)
 
-1. The Deployer configures the parameters and deploys the smart contracts to a public blockchain. At the time of deployment, the deployer configures a separate token reserve address and Transfer Administrator address. This allows the reserve security tokens to be stored in cold storage since the treasury reserve address private keys are not needed for everyday use by the Transfer Admin.
-2. The Transfer Admin then provisions a hot wallet address for distributing tokens to investors or other stakeholders. The Transfer Admin uses `setAddressPermissions(investorAddress, transferGroup, addressTimeLock, maxTokens)` to set address restrictions.
+1. The Deployer configures the parameters and deploys the smart contracts to a public blockchain. At the time of deployment, the deployer configures a separate token reserve address, a Transfer Administrator address, and a Wallets administrator address. This allows the reserve security tokens to be stored in cold storage since the treasury reserve address private keys are not needed for everyday use by the Transfer Admin.
+2. The Reserve Admin then provisions a hot wallet address for distributing tokens to investors or other stakeholders. The Wallets Admin uses `setAddressPermissions(investorAddress, transferGroup, addressTimeLock, reservedTimeLockedBalance, maxTokens)` to set address restrictions.
 3. The Transfer Admin authorizes the transfer of tokens between account groups with `setAllowGroupTransfer(fromGroup, toGroup, afterTimestamp)` .
 4. The Reserve Admin then transfers tokens to the Hot Wallet address.
 5. The Hot Wallet Admin then transfers tokens to investors or other stakeholders who are entitled to tokens.
